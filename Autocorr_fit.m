@@ -1,6 +1,6 @@
 %Finite monomer pool with two flagella, with IFT mechanism. This code also
 %calculates the autocorrelation and compares it with the theoretical result
-%from Thomas.
+%Lishibanya Mohapatra, Brandeis University.
 
 clear all;
 close all;
