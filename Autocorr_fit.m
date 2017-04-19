@@ -1,11 +1,15 @@
-%Finite monomer pool with two flagella, with IFT mechanism. This code also
-%calculates the autocorrelation and compares it with the theoretical result
 %Lishibanya Mohapatra, Brandeis University.
+
+%This code is trying to understand flagella size control in Chlamydomonas.
+%The minimal model consists of limiting monomer pool with IFT mechanism.
+%First we construct individual length trajectory using Doob-Gillespie
+%algorithm, compute the autocorrelation of l1-l2 and l1+l2, and compare it
+%with the theoretical result.
 
 clear all;
 close all;
 
-Ntot=500;k=1;
+Ntot=500;
 Nift1 = 5;
 Nift2 = 5;
 v = 2.5;
@@ -24,54 +28,54 @@ Lstar=r1*Ntot/(2*r1+gamma);
 
 
 for j=1:1
-    j
+    j;
     
-m1=zeros(1,MaxT);
-m1(1)=140;
-m2=zeros(1,MaxT);
-m2(1)=1;
-mtot=zeros(1,MaxT);
-mtot(1)=m1(1)+m2(1);
-monomers=Ntot;
-T=zeros(1,MaxT);
-T(1)=0;
-
-for i=1:MaxT
+    m1=zeros(1,MaxT);
+    m1(1)=140;
+    m2=zeros(1,MaxT);
+    m2(1)=1;
+    mtot=zeros(1,MaxT);
+    mtot(1)=m1(1)+m2(1);
+    monomers=Ntot;
+    T=zeros(1,MaxT);
+    T(1)=0;
     
-    k1=r1*(monomers-mtot(1))/m1(i);
-    k3=r2*(monomers-mtot(1))/m2(i);
-%     k1=r1*(monomers-mtot(1));
-%     k3=r2*(monomers-mtot(1));
-    
-    if (m1(i)<=1)
-        k2=0;
-    else 
-        k2=gamma;
-    end
-    
-    if (m2(i)<=1)
-        k4=0;
-    else 
-        k4=gamma;
-    end
+    for i=1:MaxT
         
-
-    
-    k0=k1+k2+k3+k4;
-    
-    % Determine time spent 
-    
-    CoinFlip1=rand;
-    tau(i)=(1/k0)*log(1/CoinFlip1);
-    T(i+1)= T(i)+tau(i);
-    % Determine reaction
-    
-    CoinFlip=rand;
-    if CoinFlip<=k1/k0
-        m1(i+1)=m1(i)+1;
-        m2(i+1)=m2(i);
-        monomers=monomers-1;
-    else
+        k1=r1*(monomers-mtot(1))/m1(i);
+        k3=r2*(monomers-mtot(1))/m2(i);
+        %     k1=r1*(monomers-mtot(1));
+        %     k3=r2*(monomers-mtot(1));
+        
+        if (m1(i)<=1)
+            k2=0;
+        else
+            k2=gamma;
+        end
+        
+        if (m2(i)<=1)
+            k4=0;
+        else
+            k4=gamma;
+        end
+        
+        
+        
+        k0=k1+k2+k3+k4;
+        
+        % Determine time spent
+        
+        CoinFlip1=rand;
+        tau(i)=(1/k0)*log(1/CoinFlip1);
+        T(i+1)= T(i)+tau(i);
+        % Determine reaction
+        
+        CoinFlip=rand;
+        if CoinFlip<=k1/k0
+            m1(i+1)=m1(i)+1;
+            m2(i+1)=m2(i);
+            monomers=monomers-1;
+        else
             if (CoinFlip>=k1/k0) && (CoinFlip<=(k1+k2)/k0)
                 m1(i+1)=m1(i)-1;
                 m2(i+1)=m2(i);
@@ -87,31 +91,20 @@ for i=1:MaxT
                     monomers=monomers+1;
                 end
             end
+        end
+        
+        mtot(i+1)=m1(i+1)+m2(i+1);
+        
+        if T(i+1)>=t1
+            break;
+        end
     end
+        
+    p1(m1(i+1))= p1(m1(i+1))+1;
+    p2(m2(i+1))= p2(m2(i+1))+1;
+    ptot(mtot(i+1))= ptot(mtot(i+1))+1;
     
-    mtot(i+1)=m1(i+1)+m2(i+1);
     
-  if T(i+1)>=t1
-    break;
-  end
-end
- 
- 
-
-% figure(1)
-% plot(T,m1,'b.')
-% hold on
-% plot(T,m2,'r.')
-% plot(T,mtot,'g.')
-% %hold off
-% xlabel('time')
-% ylabel('filament length')
-
-p1(m1(i+1))= p1(m1(i+1))+1;
-p2(m2(i+1))= p2(m2(i+1))+1;
-ptot(mtot(i+1))= ptot(mtot(i+1))+1;
- 
-
 end
 
 p1 = p1/sum(p1);
@@ -134,14 +127,6 @@ xlabel('time')
 ylabel('filament length')
 legend('L1','L2','L1+L2','location', 'SE');
 
-% 
-% figure(2)
-% plot(T,m1-m2,'b.')
-% hold on
-% plot(T,m1+m2,'r.')
-% hold off
-% xlabel('time')
-% ylabel('filament difference length')
 
 figure;
 t1=T(10000:i);
@@ -159,18 +144,18 @@ sig2=interp1(t1,sig0,xq);
 figure;
 plot(t1,sig1,'o',xq,sig,':.');
 %plot(sig,'b.')
- title('Input signals');
- xlabel('time');
- ylabel('filament difference length');
- legend('signal','Interpolated','location', 'SE');
+title('Input signals');
+xlabel('time');
+ylabel('filament difference length');
+legend('signal','Interpolated','location', 'SE');
 
 figure;
 plot(t1,sig0,'o',xq,sig2,':.');
 %plot(sig,'b.')
- title('Input signals');
- xlabel('time');
- ylabel('filament sum length');
- legend('signal','Interpolated','location', 'SE');
+title('Input signals');
+xlabel('time');
+ylabel('filament sum length');
+legend('signal','Interpolated','location', 'SE');
 
 %Arbitrary lags; How do I input time information here?
 lagS=size(xq,2)-1;
@@ -178,9 +163,9 @@ lagS2=size(xq,2)-1;
 %lagS2=1000;
 
 figure;
- autocorr(sig,lagS);
+autocorr(sig,lagS);
 % hold on;
- [h,lag]=autocorr(sig,lagS);
+[h,lag]=autocorr(sig,lagS);
 %j1=(r1/Lstar)*(Ntot/Lstar-2);
 % %k1=(exp(-j1.*lag))*eta1/j1;
 % %k1=(exp(-j1.*lag))/j1;
@@ -222,23 +207,14 @@ title('log auto-correlation l1-l2');
 xlabel('lag');
 ylabel('log autocorr');
 legend('auto(computed)','auto(theory)','location', 'SW')
-%xlim([0,2000]);
 
-% 
- figure;
- autocorr(sig2,lagS2);
-% xlim([0,1500]);
-% hold on;
- [h2,lag2]=autocorr(sig2,lagS2);
- j2=(r1*Ntot)/(Lstar^2);
-% k2=exp(-j2.*lag2);
-% k2=exp(-j2.*lag2)*eta2/j2;
-% plot(lag2,k2,'b');
-% title('auto-correlation l1+l2');
-% hold off;
-% xlabel('time');
-% ylabel('autocorr');
-% 
+
+
+figure;
+autocorr(sig2,lagS2);
+[h2,lag2]=autocorr(sig2,lagS2);
+j2=(r1*Ntot)/(Lstar^2);
+
 
 figure;
 k2=exp(-j2.*lag2)/j2;
