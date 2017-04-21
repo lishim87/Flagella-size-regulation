@@ -23,9 +23,6 @@ ptot = zeros(1,Ntot);
 MaxT=1000000;
 t1=1000000;
 Lstar=r1*Ntot/(2*r1+gamma);
-% eta1=0.002;
-% eta2=0.004;
-
 
 for j=1:1
     j;
@@ -44,9 +41,7 @@ for j=1:1
         
         k1=r1*(monomers-mtot(1))/m1(i);
         k3=r2*(monomers-mtot(1))/m2(i);
-        %     k1=r1*(monomers-mtot(1));
-        %     k3=r2*(monomers-mtot(1));
-        
+               
         if (m1(i)<=1)
             k2=0;
         else
@@ -116,7 +111,7 @@ Avg= sum(x.*p1);
 variance= sum((x.^2).*p1)-(sum(x.*p1))^2;
 
 
-% figure(1)
+% Plot the trajectories
 figure;
 plot(T(1:i),m1(1:i),'b')
 hold on
@@ -127,7 +122,7 @@ xlabel('time')
 ylabel('filament length')
 legend('L1','L2','L1+L2','location', 'SE');
 
-
+%Plot the segmented trajectories
 figure;
 t1=T(10000:i);
 sig1=m1(10000:i)-m2(10000:i);
@@ -138,45 +133,39 @@ xlabel('time');
 ylabel('filament difference and sum lengths');
 legend('L1-L2','L1+L2-2Lss','location', 'SE');
 
+%plot the interpolated difference trajectories
 xq=t1(1):1:t1(end);
 sig=interp1(t1,sig1,xq);
 sig2=interp1(t1,sig0,xq);
 figure;
 plot(t1,sig1,'o',xq,sig,':.');
-%plot(sig,'b.')
 title('Input signals');
 xlabel('time');
 ylabel('filament difference length');
 legend('signal','Interpolated','location', 'SE');
 
+%plot the interpolated sum trajectories
 figure;
 plot(t1,sig0,'o',xq,sig2,':.');
-%plot(sig,'b.')
 title('Input signals');
 xlabel('time');
 ylabel('filament sum length');
 legend('signal','Interpolated','location', 'SE');
 
-%Arbitrary lags; How do I input time information here?
 lagS=size(xq,2)-1;
 lagS2=size(xq,2)-1;
-%lagS2=1000;
 
+
+%plot autocorrelation for difference
 figure;
 autocorr(sig,lagS);
-% hold on;
 [h,lag]=autocorr(sig,lagS);
-%j1=(r1/Lstar)*(Ntot/Lstar-2);
-% %k1=(exp(-j1.*lag))*eta1/j1;
-% %k1=(exp(-j1.*lag))/j1;
-% %k1=(exp(-j1.*lag));
-
-
 j1=(r1/Lstar)*(Ntot/Lstar-2);
 k1=(exp(-j1.*lag))/j1;
 eta1= 1/k1(1);
-
 k1=(exp(-j1.*lag))*eta1/j1;
+
+%compare computed autocorrelation with theory, using fit 1
 figure
 plot(lag,h,'b');
 hold on;
@@ -192,6 +181,7 @@ legend('auto(computed)','auto(theory)','location', 'NE')
 Eqn = @(a,x)(a/j1)*exp(-j1*x);
 startPoints = 1;
 [f1,gof,output] = fit(lag',h',Eqn,'Start', startPoints);
+%compare computed autocorrelation with theory, using fit 2
 figure;
 plot(f1,lag',h','predfunc');
 xlabel('time');
@@ -200,7 +190,7 @@ title('Fit with Theorectical function a*exp(-b*x)');
 xlim([0,2000]);
 eta3=coeffvalues(f1);
 
-
+% semi-log plot to check decay
 figure;
 semilogy(lag(1:1000),h(1:1000),lag(1:1000),k1(1:1000))
 title('log auto-correlation l1-l2');
@@ -209,13 +199,13 @@ ylabel('log autocorr');
 legend('auto(computed)','auto(theory)','location', 'SW')
 
 
-
+%plot autocorrelation for sum
 figure;
 autocorr(sig2,lagS2);
 [h2,lag2]=autocorr(sig2,lagS2);
 j2=(r1*Ntot)/(Lstar^2);
 
-
+%compare computed autocorrelation with theory, using fit 1
 figure;
 k2=exp(-j2.*lag2)/j2;
 eta2= 1/k2(1);
@@ -233,6 +223,7 @@ xlim([0,2000]);
 Eqn = @(a,x)(a/j2)*exp(-j2*x);
 startPoints = 1;
 [f1,gof,output] = fit(lag2',h2',Eqn,'Start', startPoints);
+%compare computed autocorrelation with theory, using fit 2
 figure;
 plot(f1,lag2',h2','predfunc');
 xlabel('time');
@@ -241,6 +232,7 @@ title('Fit with Theorectical function a*exp(-b*x)');
 xlim([0,2000]);
 eta4=coeffvalues(f1);
 
+% semi-log plot to check decay
 figure;
 semilogy(lag2(1:2000),h2(1:2000),lag2(1:2000),k2(1:2000))
 title('log auto-correlation l1+l2');
@@ -248,3 +240,5 @@ xlabel('lag');
 ylabel('log autocorr');
 xlim([0,1000]);
 
+% eta1, eta3 values are noise values for difference
+% eta2, eta4 values are noise values for sum
