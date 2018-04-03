@@ -2,7 +2,7 @@
 
 %This code is trying to understand flagella size control in Chlamydomonas.
 %The minimal model consists of limiting monomer pool with IFT mechanism.
-%First we construct individual length trajectory using Doob-Gillespie
+%First we construct TWO individual length trajectory using Doob-Gillespie
 %algorithm, then compute the autocorrelations for L1-L2 and L1+L2, and finally compare it
 %with the expected theoretical result.
 
