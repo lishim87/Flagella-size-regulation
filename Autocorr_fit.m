@@ -134,9 +134,14 @@ legend('L1','L2','L1+L2','location', 'SE');
 
 %Plot the segmented trajectories
 figure;
-t1=T(10000:i);
-sig1=m1(10000:i)-m2(10000:i);
-sig0=(m1(10000:i)+m2(10000:i))- 2*Lstar;
+% t1=T(10000:i);
+% sig1=m1(10000:i)-m2(10000:i);
+% sig0=(m1(10000:i)+m2(10000:i))- 2*Lstar;
+
+
+t1=T(1:1000);
+sig1=m1(1:1000)-m2(1:1000);
+sig0=(m1(1:1000)+m2(1:1000));
 plot(t1,sig1,'b.',t1,sig0,'r.')
 title('Input signals');
 xlabel('time');
@@ -252,3 +257,8 @@ xlim([0,1000]);
 
 % eta1, eta3 values are noise values for difference
 % eta2, eta4 values are noise values for sum
+figure;
+plot(lag2(1:2000),h2(1:2000),lag(1:2000),h(1:2000))
+xlabel('Lag time');
+ylabel('Autocorrelation');
+legend('sum','diff')
