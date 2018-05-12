@@ -33,7 +33,7 @@ end
 
 %motor
 
-Steps= 5; %total number of steps
+Steps= 50; %total number of steps
 T= zeros(1,Steps); % time (mins) vector
 T(1)=0; %initial time
 %tau=zeros(1,Steps); %time steps
@@ -106,7 +106,7 @@ for i= 1:Steps
         if (C2 > (k1/k0)) && (C2 <= (k1+k2)/k0) % decay
             disp('subtract1')
             m1(i+1)= m1(i)- 1;
-            m2(i+1)=m2(i);
+            m2(i+1)= m2(i);
             monomers = monomers + 1;
             b = b-1;
             
@@ -136,8 +136,7 @@ for i= 1:Steps
                     disp('choose filament')
                     motor(ch1,5)
                     m
-                    if  (motor(ch1,4)== 1)
-                        %   disp('translate+')
+                    if  (motor(ch1,4)== 1)  %   disp('translate+')
                         motor(ch1,3)= motor(ch1,3)+ 1; %increment the position
                         
                         if (motor(ch1,3)>= m(i))
@@ -205,11 +204,10 @@ for i= 1:Steps
                         m2(i+1)= m(i+1);
                         m1(i+1)=m1(i);
                         disp('m2')
-                        m2
+                        m1
                         m2
                     end
-                    disp('diff')
-                    m1(i+1)- m1(1)+(m2(i+1)-m2(1))- b
+                    
 
                 else
                     disp('boo')
@@ -218,7 +216,8 @@ for i= 1:Steps
             end
         end
     end
-    
+   disp('diff')
+   m1(i+1)- m1(1)+(m2(i+1)-m2(1))- b 
 end
 
 %m1(end)-m1(1)+(m2(end)-m2(1))
