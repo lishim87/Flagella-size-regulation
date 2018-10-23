@@ -262,3 +262,5 @@ plot(lag2(1:2000),h2(1:2000),lag(1:2000),h(1:2000))
 xlabel('Lag time');
 ylabel('Autocorrelation');
 legend('sum','diff')
+
+%%end of code
