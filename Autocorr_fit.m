@@ -1,6 +1,6 @@
 %Lishibanya Mohapatra, Brandeis University.
 
-%This code is to understand flagella size control in a unicellular 
+%This code was made to understand flagella size control in a unicellular 
 %organism called Chlamydomonas. Chlamy has two flagella, and if you sever 
 %one of the flagella, the other one shrinks until the flagella lengths are 
 %equal and then both the flagella grow to a different steady state. We aim
